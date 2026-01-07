@@ -1,8 +1,18 @@
+### Maven ###
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+
+### Spring Boot (config sensível) ###
+src/main/resources/application-dev.properties
+src/main/resources/application-prod.properties
+src/main/resources/application-local.properties
+.env
+
+### Logs ###
+*.log
 
 ### STS ###
 .apt_generated
@@ -14,7 +24,7 @@ target/
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -25,6 +35,8 @@ target/
 /dist/
 /nbdist/
 /.nb-gradle/
+
+### Gradle / Build ###
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
