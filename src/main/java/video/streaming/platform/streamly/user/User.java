@@ -5,14 +5,18 @@ import jakarta.validation.constraints.Email;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(name = "users", schema = "streamly")
 @EntityListeners(AuditingEntityListener.class)
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -46,6 +50,7 @@ public class User {
     public UUID getId(){return id;}
     public String getName(){return name;}
     public String getEmail(){return email;}
+    public String getPasswordHash(){return passwordHash;}
     public UserRoles getRole(){return role;}
     public LocalDateTime getCreatedAt(){return createdAt;}
 
@@ -62,4 +67,18 @@ public class User {
         this.role = role;
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    @Override
+    public String getPassword() {
+        return getPasswordHash();
+    }
+
+    @Override
+    public String getUsername() {
+        return getEmail();
+    }
 }
