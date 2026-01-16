@@ -1,5 +1,6 @@
 package video.streaming.platform.streamly.util;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -21,5 +22,23 @@ public class JWTUtil {
                 .setExpiration(new Date(System.currentTimeMillis() +  EXPIRATION_TIME))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public String extractTokenUsername(String token) {
+        Claims body = Jwts.parser()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return body.getSubject();
+    }
+
+    public boolean isTokenValid(String token) {
+        Claims tokenBody = Jwts.parser()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return tokenBody.getExpiration().before(new Date());
     }
 }
