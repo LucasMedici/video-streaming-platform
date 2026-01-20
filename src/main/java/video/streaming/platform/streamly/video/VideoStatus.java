@@ -1,6 +1,8 @@
 package video.streaming.platform.streamly.video;
 
 public enum VideoStatus {
-    PUBLIC,
-    PRIVATE
+    UPLOADED,
+    PROCESSING,
+    READY,
+    FAILED
 }
