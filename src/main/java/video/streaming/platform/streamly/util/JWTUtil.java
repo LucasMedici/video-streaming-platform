@@ -39,6 +39,13 @@ public class JWTUtil {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        return tokenBody.getExpiration().before(new Date());
+
+        Date tokenExpiration = tokenBody.getExpiration();
+        Date currentDate = new Date();
+
+        if(currentDate.before(tokenExpiration)){
+            return true;
+        }
+        return false;
     }
 }

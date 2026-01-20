@@ -54,6 +54,7 @@ public class User implements UserDetails {
     public String getPasswordHash(){return passwordHash;}
     public UserRoles getRole(){return role;}
     public LocalDateTime getCreatedAt(){return createdAt;}
+    public LocalDateTime getUpdatedAt(){return updatedAt;}
 
     public void setName(String name){
         this.name = name;
