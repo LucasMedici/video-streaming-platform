@@ -28,6 +28,10 @@ public class VideoController {
 
         String publicUrl = videoUploadService.uploadVideo(video, path);
 
+        //TODO: chamar video service e criar a linha do video com os dados dele lá
+        //TODO: com isso funcionando implementar o FFmpeg para converter os videos em partes de multiplas resolucoes
+        //TODO: inserir sistema de fila com isso, ao inserir o video fica processing, depois ele atualiza a linha pra ok ou algo assim
+
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

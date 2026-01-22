@@ -19,7 +19,7 @@ public class SupabaseConfig {
         return WebClient.builder()
                 .baseUrl(supabaseUrl)
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + serviceKey)
-                .defaultHeader("apikey", serviceKey)
+                .defaultHeader("apiKey", serviceKey)
                 .build();
     }
 }
