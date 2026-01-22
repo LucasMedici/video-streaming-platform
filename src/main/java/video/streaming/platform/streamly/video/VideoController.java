@@ -1,12 +1,12 @@
 package video.streaming.platform.streamly.video;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import video.streaming.platform.streamly.video.upload.VideoUploadService;
 
 import java.util.UUID;
 
@@ -30,6 +30,8 @@ public class VideoController {
 
         Video createdVideo = videoService.createVideo(video, createVideoDTO);
         videoUploadService.uploadVideo(video, path);
+        // enviar pra fila de processamento com ffmpeg
+        // mover essa chamada de service aqui de baixo para dentro do subscriber da fila
         videoService.updateVideoOnProcessingFinished(createdVideo.getId(), VideoStatus.UPLOADED, Long.parseLong("1000"));
 
         //TODO: FFmpeg para converter os videos em partes de multiplas resolucoes

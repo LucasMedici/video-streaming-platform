@@ -1,4 +1,4 @@
-package video.streaming.platform.streamly.util;
+package video.streaming.platform.streamly.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
