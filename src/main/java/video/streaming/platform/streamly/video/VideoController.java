@@ -16,9 +16,11 @@ public class VideoController {
 
     private ObjectMapper objectMapper;
     private VideoUploadService videoUploadService;
-    public VideoController(ObjectMapper objectMapper, VideoUploadService videoUploadService){
+    private VideoService videoService;
+    public VideoController(ObjectMapper objectMapper, VideoUploadService videoUploadService, VideoService videoService){
         this.objectMapper=objectMapper;
         this.videoUploadService=videoUploadService;
+        this.videoService=videoService;
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -26,10 +28,12 @@ public class VideoController {
         CreateVideoDTO createVideoDTO = objectMapper.readValue(data, CreateVideoDTO.class);
         String path = UUID.randomUUID()+"-"+video.getOriginalFilename();
 
-        String publicUrl = videoUploadService.uploadVideo(video, path);
+        Video createdVideo = videoService.createVideo(video, createVideoDTO);
+        videoUploadService.uploadVideo(video, path);
+        videoService.updateVideoOnProcessingFinished(createdVideo.getId(), VideoStatus.UPLOADED, Long.parseLong("1000"));
 
-        //TODO: chamar video service e criar a linha do video com os dados dele lá
-        //TODO: com isso funcionando implementar o FFmpeg para converter os videos em partes de multiplas resolucoes
+        //TODO: FFmpeg para converter os videos em partes de multiplas resolucoes
+        //TODO: ARRUMAR SEGUNDOS DO VIDEO, TA FIXADO EM 1000
         //TODO: inserir sistema de fila com isso, ao inserir o video fica processing, depois ele atualiza a linha pra ok ou algo assim
 
         return ResponseEntity.status(HttpStatus.CREATED).build();
