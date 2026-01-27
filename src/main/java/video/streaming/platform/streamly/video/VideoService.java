@@ -58,10 +58,11 @@ public class VideoService {
         return videoRepository.save(foundedVideo);
     }
 
-    public Video updateVideoOnProcessingFinished(UUID videoID, VideoStatus status, Long durationSeconds){
+    public Video updateVideoOnProcessingFinished(UUID videoID, VideoStatus status, Long durationSeconds, String storagePath){
         Video foundedVideo = videoRepository.findById(videoID).orElseThrow();
         foundedVideo.setStatus(status);
         foundedVideo.setDurationSeconds(durationSeconds);
+        foundedVideo.setStoragePath(storagePath);
         return videoRepository.save(foundedVideo);
     }
 
