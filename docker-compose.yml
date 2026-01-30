@@ -13,5 +13,21 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
+  backend:
+    build: .
+    container_name: streamly-backend
+    ports:
+      - 8080:8080
+    depends_on:
+      - rabbitmq
+    environment:
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: admin
+      SPRING_RABBITMQ_PASSWORD: admin
+    volumes:
+      - ./videos:/videos
+    restart: unless-stopped
+
 volumes:
   rabbitmq_data:

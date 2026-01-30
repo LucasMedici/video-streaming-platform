@@ -1,4 +1,4 @@
-package video.streaming.platform.streamly.video.upload;
+package video.streaming.platform.streamly.video;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
