@@ -35,6 +35,11 @@ public class VideoProcessingSubscriber {
         log.info("Enviando ao FFm para calcular duracao do video");
         long duration = ffmpegService.getVideoDurationSeconds(localFile);
 
+        log.info("Gerando HLS");
+        Path hlsDir = ffmpegService.generateHls(localFile);
+
+        log.info("Subindo chunks ao supabase");
+
 
         log.info("Atualizando dados do video");
         videoService.updateVideoOnProcessingFinished(
