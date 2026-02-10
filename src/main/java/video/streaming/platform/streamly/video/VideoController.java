@@ -28,11 +28,12 @@ public class VideoController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadVideo(@RequestPart("file") MultipartFile video, @RequestPart("data") String data) throws Exception {
         CreateVideoDTO createVideoDTO = objectMapper.readValue(data, CreateVideoDTO.class);
-        String path = UUID.randomUUID()+"-"+video.getOriginalFilename();
+
 
         Video createdVideo = videoService.createVideo(video, createVideoDTO); // criar linha do video no DB
-        videoUploadService.uploadVideo(video, path); // subir objeto inteiro do video no DB
-        videoProcessingPublisher.sendMessage(createdVideo.getId(), path); // enviar para fila processar o FFMPEG
+        String originalPath = createdVideo.getId() + "/original";
+        videoUploadService.uploadVideo(video, originalPath); // subir objeto inteiro do video no DB
+        videoProcessingPublisher.sendMessage(createdVideo.getId(), originalPath); // enviar para fila processar o FFMPEG
 
 
         return ResponseEntity.status(HttpStatus.CREATED).build();

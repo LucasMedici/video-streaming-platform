@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import video.streaming.platform.streamly.video.VideoDownloadService;
 import video.streaming.platform.streamly.video.VideoService;
 import video.streaming.platform.streamly.video.VideoStatus;
+import video.streaming.platform.streamly.video.VideoUploadService;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,12 +19,14 @@ public class VideoProcessingSubscriber {
     private VideoService videoService;
     private FfmpegService ffmpegService;
     private VideoDownloadService videoDownloadService;
+    private VideoUploadService videoUploadService;
     private static final Logger log = LoggerFactory.getLogger(VideoProcessingSubscriber.class);
 
-    public VideoProcessingSubscriber(VideoService videoService, FfmpegService ffmpegService, VideoDownloadService videoDownloadService){
+    public VideoProcessingSubscriber(VideoService videoService, FfmpegService ffmpegService, VideoDownloadService videoDownloadService, VideoUploadService videoUploadService){
         this.videoService=videoService;
         this.ffmpegService=ffmpegService;
         this.videoDownloadService=videoDownloadService;
+        this.videoUploadService=videoUploadService;
     }
 
     @RabbitListener(queues = "${spring.rabbitmq.queue-video-name}")
@@ -39,6 +42,7 @@ public class VideoProcessingSubscriber {
         Path hlsDir = ffmpegService.generateHls(localFile);
 
         log.info("Subindo chunks ao supabase");
+        videoUploadService.uploadHlsDirectory(hlsDir, processingMessageDTO.getVideoId());
 
 
         log.info("Atualizando dados do video");
