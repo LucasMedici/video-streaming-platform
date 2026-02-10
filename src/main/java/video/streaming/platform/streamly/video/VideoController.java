@@ -29,13 +29,15 @@ public class VideoController {
     public ResponseEntity<?> uploadVideo(@RequestPart("file") MultipartFile video, @RequestPart("data") String data) throws Exception {
         CreateVideoDTO createVideoDTO = objectMapper.readValue(data, CreateVideoDTO.class);
 
+        try{
+            Video createdVideo = videoService.createVideo(video, createVideoDTO); // criar linha do video no DB
+            String originalPath = createdVideo.getId() + "/original";
+            videoUploadService.uploadVideo(video, originalPath); // subir objeto inteiro do video no DB
+            videoProcessingPublisher.sendMessage(createdVideo.getId(), originalPath); // enviar para fila processar o FFMPEG
+            return ResponseEntity.status(HttpStatus.CREATED).build();
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid Arguments");
+        }
 
-        Video createdVideo = videoService.createVideo(video, createVideoDTO); // criar linha do video no DB
-        String originalPath = createdVideo.getId() + "/original";
-        videoUploadService.uploadVideo(video, originalPath); // subir objeto inteiro do video no DB
-        videoProcessingPublisher.sendMessage(createdVideo.getId(), originalPath); // enviar para fila processar o FFMPEG
-
-
-        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

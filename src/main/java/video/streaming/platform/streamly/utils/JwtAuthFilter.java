@@ -34,7 +34,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
-        System.out.println("token: "+token);
         String username = null;
         if(token.isBlank()){
             filterChain.doFilter(request,response);

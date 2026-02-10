@@ -30,6 +30,10 @@ public class VideoService {
         String mimeType = video.getContentType();
         long videoSize = video.getSize();
 
+        if(mimeType == null || !mimeType.startsWith("video/")){
+            throw new IllegalArgumentException("Invalid video type");
+        }
+
 
         var newVideo = new Video(createVideoDTO.title(),
                                 createVideoDTO.description(),
@@ -64,6 +68,13 @@ public class VideoService {
         foundedVideo.setDurationSeconds(durationSeconds);
         foundedVideo.setStoragePath(storagePath);
         return videoRepository.save(foundedVideo);
+    }
+
+    public void updateVideoStatus(VideoStatus status, UUID videoID){
+        videoRepository.findById(videoID).ifPresent(video -> {
+            video.setStatus(VideoStatus.FAILED);
+            videoRepository.save(video);
+        });
     }
 
     public void deleteVideo(UUID videoId){

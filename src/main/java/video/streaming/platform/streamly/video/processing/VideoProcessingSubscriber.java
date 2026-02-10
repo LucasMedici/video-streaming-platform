@@ -32,28 +32,34 @@ public class VideoProcessingSubscriber {
     @RabbitListener(queues = "${spring.rabbitmq.queue-video-name}")
     public void processVideo(ProcessingMessageDTO processingMessageDTO) throws IOException {
 
-        log.info("Buscando video no Supabase");
-        Path localFile = videoDownloadService.downloadToTempVideo(processingMessageDTO.getPath());
+        try{
+            log.info("Buscando video no Supabase");
+            Path localFile = videoDownloadService.downloadToTempVideo(processingMessageDTO.getPath());
 
-        log.info("Enviando ao FFm para calcular duracao do video");
-        long duration = ffmpegService.getVideoDurationSeconds(localFile);
+            log.info("Enviando ao FFm para calcular duracao do video");
+            long duration = ffmpegService.getVideoDurationSeconds(localFile);
 
-        log.info("Gerando HLS");
-        Path hlsDir = ffmpegService.generateHls(localFile);
+            log.info("Gerando HLS");
+            Path hlsDir = ffmpegService.generateHls(localFile);
 
-        log.info("Subindo chunks ao supabase");
-        videoUploadService.uploadHlsDirectory(hlsDir, processingMessageDTO.getVideoId());
+            log.info("Subindo chunks ao supabase");
+            videoUploadService.uploadHlsDirectory(hlsDir, processingMessageDTO.getVideoId());
 
 
-        log.info("Atualizando dados do video");
-        videoService.updateVideoOnProcessingFinished(
-                processingMessageDTO.getVideoId(),
-                VideoStatus.UPLOADED,
-                duration,
-                processingMessageDTO.getPath()
-        );
+            log.info("Atualizando dados do video");
+            videoService.updateVideoOnProcessingFinished(
+                    processingMessageDTO.getVideoId(),
+                    VideoStatus.UPLOADED,
+                    duration,
+                    processingMessageDTO.getPath()
+            );
 
-        Files.delete(localFile);
+            Files.delete(localFile);
+        }catch (Exception e){
+            log.error("Erro ao processar video {}", processingMessageDTO.getVideoId(), e);
+            videoService.updateVideoStatus(VideoStatus.FAILED, processingMessageDTO.getVideoId());
+        }
+
     }
 
 }
