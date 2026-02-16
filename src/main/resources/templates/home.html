@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Streamly</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Bem-vindo ao Streamly 🎬</h2>
+
+    <p>
+        Você está logado com sucesso.
+    </p>
+
+    <p>
+        Esta será a página inicial onde os vídeos serão exibidos futuramente.
+    </p>
+
+    <button onclick="logout()">Sair</button>
+
+</div>
+
+<script>
+
+    // 🔐 Verifica se tem token
+    const token = localStorage.getItem("token");
+
+    if(!token){
+        window.location.href = "/login";
+    }
+
+    // 🚪 Logout simples
+    function logout(){
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+    }
+
+</script>
+
+</body>
+</html>
