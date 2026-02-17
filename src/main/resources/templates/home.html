@@ -1,46 +1,104 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
     <title>Streamly</title>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/home.css">
 </head>
 
 <body>
 
-<div class="container">
+<!-- TOP BAR -->
+<div class="topbar">
+    <div class="logo">Streamly 🎬</div>
 
-    <h2>Bem-vindo ao Streamly 🎬</h2>
+    <div class="actions">
+        <button class="upload-btn" onclick="irUpload()">Upload</button>
+        <button class="logout-btn" onclick="logout()">Sair</button>
+    </div>
+</div>
 
-    <p>
-        Você está logado com sucesso.
-    </p>
+<!-- CONTENT -->
+<div class="content">
 
-    <p>
-        Esta será a página inicial onde os vídeos serão exibidos futuramente.
-    </p>
+    <h2>For you</h2>
 
-    <button onclick="logout()">Sair</button>
+    <div id="grid" class="video-grid">
+        <!-- cards entram aqui -->
+    </div>
 
 </div>
 
 <script>
 
-    // 🔐 Verifica se tem token
     const token = localStorage.getItem("token");
 
     if(!token){
         window.location.href = "/login";
     }
 
-    // 🚪 Logout simples
     function logout(){
         localStorage.removeItem("token");
         window.location.href = "/login";
     }
+
+    function irUpload(){
+        window.location.href = "/upload";
+    }
+
+    function abrirPlayer(video){
+        alert("Abrindo player para: " + video.title);
+    }
+
+
+    // CARREGAR VIDEOS DO BACKEND
+    async function carregarVideos(){
+
+        const response = await fetch("/videos", {
+            headers:{
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        if(!response.ok){
+            alert("Erro ao carregar vídeos");
+            return;
+        }
+
+        const videos = await response.json();
+
+        const grid = document.getElementById("grid");
+        grid.innerHTML = "";
+
+        videos.forEach(video => {
+
+            const card = document.createElement("div");
+            card.className = "video-card";
+            card.onclick = () => abrirPlayer(video);
+
+            card.innerHTML = `
+                <div class="thumb"></div>
+
+                <div class="title">
+                    ${video.title}
+                </div>
+
+                <div style="padding:0 12px 12px 12px; font-size:12px; color:#94a3b8;">
+                    ${video.description}s
+                </div>
+                <div style="padding:0 12px 12px 12px; font-size:12px; color:#94a3b8;">
+                    ${video.durationSeconds}s
+                </div>
+            `;
+
+            grid.appendChild(card);
+        });
+    }
+
+    carregarVideos();
 
 </script>
 

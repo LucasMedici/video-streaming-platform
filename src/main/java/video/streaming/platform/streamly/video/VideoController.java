@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import video.streaming.platform.streamly.video.processing.VideoProcessingPublisher;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -18,11 +19,13 @@ public class VideoController {
     private VideoUploadService videoUploadService;
     private VideoService videoService;
     private VideoProcessingPublisher videoProcessingPublisher;
-    public VideoController(ObjectMapper objectMapper, VideoUploadService videoUploadService, VideoService videoService, VideoProcessingPublisher videoProcessingPublisher){
+    private final VideoMapper videoMapper;
+    public VideoController(ObjectMapper objectMapper, VideoUploadService videoUploadService, VideoService videoService, VideoProcessingPublisher videoProcessingPublisher, VideoMapper videoMapper){
         this.objectMapper=objectMapper;
         this.videoUploadService=videoUploadService;
         this.videoService=videoService;
         this.videoProcessingPublisher=videoProcessingPublisher;
+        this.videoMapper=videoMapper;
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -38,6 +41,15 @@ public class VideoController {
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid Arguments");
         }
+    }
 
+    @GetMapping()
+    public ResponseEntity<List<ResponseVideoDTO>> getAllVideos(){
+        List<Video> allVideos = videoService.getAllVideos();
+
+        List<ResponseVideoDTO> responseVideoDTOS = allVideos.stream()
+                .map(video -> videoMapper.entityToDTO(video))
+                .toList();
+        return ResponseEntity.status(HttpStatus.OK).body(responseVideoDTOS);
     }
 }
