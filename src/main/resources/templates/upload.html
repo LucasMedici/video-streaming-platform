@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload — Streamly</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="/css/home.css">
+</head>
+
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+    <div class="logo">Streamly 🎬</div>
+
+    <div class="actions">
+        <button class="logout-btn" onclick="voltar()">Voltar</button>
+    </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+    <h2>Enviar Vídeo</h2>
+
+    <div class="upload-box">
+
+        <input id="file" type="file" accept="video/*">
+
+        <input id="title" placeholder="Título do vídeo">
+
+        <textarea id="description" placeholder="Descrição"></textarea>
+
+        <button class="upload-btn" onclick="upload()">
+            Enviar
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+    const token = localStorage.getItem("token");
+
+    if(!token){
+        window.location.href="/login";
+    }
+
+    function voltar(){
+        window.location.href="/";
+    }
+
+    async function upload(){
+
+        const fileInput = document.getElementById("file");
+        const file = fileInput.files[0];
+
+        if(!file){
+            alert("Selecione um arquivo");
+            return;
+        }
+
+        const payload = {
+            title: document.getElementById("title").value,
+            description: document.getElementById("description").value,
+            mimeType: file.type
+        };
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("data", JSON.stringify(payload));
+
+        const response = await fetch("/videos", {
+            method: "POST",
+            headers:{
+                "Authorization": "Bearer " + token
+            },
+            body: formData
+        });
+
+        if(response.ok){
+            alert("Upload enviado 🚀");
+            window.location.href="/home";
+        }else{
+            const text = await response.text();
+            alert("Erro:\n"+text);
+        }
+    }
+
+</script>
+
+</body>
+</html>

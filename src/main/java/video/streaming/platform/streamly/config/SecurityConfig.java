@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth->
                         auth.requestMatchers("/auth").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                                .requestMatchers("/home", "/login", "/register", "/css/**", "/js/**").permitAll()
+                                .requestMatchers("/home", "/upload","/login", "/register", "/css/**", "/js/**").permitAll()
                                 .anyRequest().authenticated());
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

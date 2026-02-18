@@ -18,4 +18,7 @@ public class webViewController {
 
     @GetMapping("/home")
     public String homePage() {return "home";}
+
+    @GetMapping("/upload")
+    public String uploadPage() {return "upload";}
 }
