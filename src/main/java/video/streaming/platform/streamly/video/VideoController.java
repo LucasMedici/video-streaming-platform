@@ -52,4 +52,14 @@ public class VideoController {
                 .toList();
         return ResponseEntity.status(HttpStatus.OK).body(responseVideoDTOS);
     }
+
+    @DeleteMapping("/{videoId}")
+    public ResponseEntity<Void> deleteVideo(@PathVariable UUID videoId){
+        Video videoToDelete = videoService.getVideoById(videoId);
+
+        videoService.deleteVideoBucket(videoToDelete.getStoragePath());
+        videoService.deleteVideo(videoId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
 }

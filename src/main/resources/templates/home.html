@@ -24,11 +24,9 @@
 <!-- CONTENT -->
 <div class="content">
 
-    <h2>For you</h2>
+    <h2>Para você</h2>
 
-    <div id="grid" class="video-grid">
-        <!-- cards entram aqui -->
-    </div>
+    <div id="grid" class="video-grid"></div>
 
 </div>
 
@@ -54,7 +52,29 @@
     }
 
 
-    // CARREGAR VIDEOS DO BACKEND
+    // DELETE VIDEO
+    async function deletarVideo(id){
+
+        const confirmacao = confirm("Deseja deletar este vídeo?");
+        if(!confirmacao) return;
+
+        const response = await fetch(`/videos/${id}`, {
+            method: "DELETE",
+            headers:{
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        if(response.ok){
+            carregarVideos();
+        }else{
+            const text = await response.text();
+            alert("Erro ao deletar:\n" + text);
+        }
+    }
+
+
+    // LOAD VIDEOS
     async function carregarVideos(){
 
         const response = await fetch("/videos", {
@@ -80,17 +100,25 @@
             card.onclick = () => abrirPlayer(video);
 
             card.innerHTML = `
-                <div class="thumb"></div>
+                <div class="thumb">
+
+                    <div class="delete-btn"
+                         onclick="event.stopPropagation(); deletarVideo('${video.id}')">
+                         🗑
+                    </div>
+
+                </div>
 
                 <div class="title">
                     ${video.title}
                 </div>
 
-                <div style="padding:0 12px 12px 12px; font-size:12px; color:#94a3b8;">
-                    ${video.description}s
+                <div class="desc">
+                    ${video.description || ""}
                 </div>
-                <div style="padding:0 12px 12px 12px; font-size:12px; color:#94a3b8;">
-                    ${video.durationSeconds}s
+
+                <div class="duration">
+                    ${video.durationSeconds || 0}s
                 </div>
             `;
 

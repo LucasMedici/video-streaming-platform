@@ -1,8 +1,10 @@
 package video.streaming.platform.streamly.video;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.reactive.function.client.WebClient;
 import video.streaming.platform.streamly.user.User;
 
 import java.util.List;
@@ -12,9 +14,14 @@ import java.util.UUID;
 @Service
 public class VideoService {
 
+    @Value("${supabase.bucket}")
+    private String bucket;
+
     private final VideoRepository videoRepository;
-    public VideoService(VideoRepository videoRepository){
+    private final WebClient webClient;
+    public VideoService(VideoRepository videoRepository, WebClient webClient){
         this.videoRepository=videoRepository;
+        this.webClient=webClient;
     }
 
     public Video createVideo(MultipartFile video, CreateVideoDTO createVideoDTO){
@@ -79,5 +86,13 @@ public class VideoService {
 
     public void deleteVideo(UUID videoId){
         videoRepository.deleteById(videoId);
+    }
+
+    public void deleteVideoBucket(String path) {
+        webClient.delete()
+                .uri("/storage/v1/object/{bucket}/{path}", bucket, path)
+                .retrieve()
+                .toBodilessEntity()
+                .block();
     }
 }
