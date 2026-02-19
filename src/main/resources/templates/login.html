@@ -56,8 +56,14 @@
 
                 // TOKEN É STRING PURA
                 const token = await response.text();
-
                 localStorage.setItem("token", token);
+
+
+                const base64Payload = token.split('.')[1];
+                const jsonPayload = atob(base64Payload);
+                const decoded = JSON.parse(jsonPayload);
+
+                localStorage.setItem("role", decoded.role);
 
                 window.location.href = "/home";
             }

@@ -15,9 +15,10 @@ public class JWTUtil {
     private final SecretKey secretKey = Keys.hmacShaKeyFor(SECRET.getBytes());
     private final long EXPIRATION_TIME = 1000*60*60; //1 hour
 
-    public String generateToken(String username){
+    public String generateToken(String username, String role){
         return Jwts.builder()
                 .setSubject(username)
+                .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() +  EXPIRATION_TIME))
                 .signWith(secretKey, SignatureAlgorithm.HS256)

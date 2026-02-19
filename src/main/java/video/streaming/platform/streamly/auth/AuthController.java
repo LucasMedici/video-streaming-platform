@@ -3,6 +3,7 @@ package video.streaming.platform.streamly.auth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,8 +24,10 @@ public class AuthController {
     @PostMapping
     public String login(@RequestBody authLoginDTO authLoginDTO){
         try{
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authLoginDTO.email(), authLoginDTO.password()));
-            return jwtUtil.generateToken(authLoginDTO.email());
+            Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authLoginDTO.email(), authLoginDTO.password()));
+            var userDetails = (org.springframework.security.core.userdetails.UserDetails) authenticate.getPrincipal();
+            String role = userDetails.getAuthorities().iterator().next().getAuthority();
+            return jwtUtil.generateToken(userDetails.getUsername(), role);
         }catch (Exception e){
             throw e;
         }

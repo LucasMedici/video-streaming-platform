@@ -27,11 +27,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth->
-                        auth.requestMatchers("/auth").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                                .requestMatchers("/home", "/upload","/login", "/register", "/css/**", "/js/**").permitAll()
-                                .anyRequest().authenticated());
+                .authorizeHttpRequests(auth-> auth
+                        .requestMatchers("/auth").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                        .requestMatchers("/home", "upload","/login", "/register", "/css/**", "/js/**").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/videos").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/videos/**").hasRole("ADMIN")
+
+                        .anyRequest().authenticated());
+
+
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

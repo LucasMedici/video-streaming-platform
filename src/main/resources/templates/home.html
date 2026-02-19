@@ -33,13 +33,24 @@
 <script>
 
     const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
 
     if(!token){
         window.location.href = "/login";
     }
 
+    const isAdmin = role === "ROLE_ADMIN";
+
+    // ESCONDE BOTÃO UPLOAD SE NÃO FOR ADMIN
+    window.addEventListener("DOMContentLoaded", () => {
+        if(!isAdmin){
+            document.querySelector(".upload-btn").style.display = "none";
+        }
+    });
+
     function logout(){
         localStorage.removeItem("token");
+        localStorage.removeItem("role");
         window.location.href = "/login";
     }
 
@@ -89,7 +100,6 @@
         }
 
         const videos = await response.json();
-
         const grid = document.getElementById("grid");
         grid.innerHTML = "";
 
@@ -99,14 +109,17 @@
             card.className = "video-card";
             card.onclick = () => abrirPlayer(video);
 
+            // 🔥 DELETE SÓ SE ADMIN
+            const deleteButton = isAdmin ? `
+                <div class="delete-btn"
+                     onclick="event.stopPropagation(); deletarVideo('${video.id}')">
+                     🗑
+                </div>
+            ` : "";
+
             card.innerHTML = `
                 <div class="thumb">
-
-                    <div class="delete-btn"
-                         onclick="event.stopPropagation(); deletarVideo('${video.id}')">
-                         🗑
-                    </div>
-
+                    ${deleteButton}
                 </div>
 
                 <div class="title">
@@ -129,6 +142,7 @@
     carregarVideos();
 
 </script>
+
 
 </body>
 </html>
