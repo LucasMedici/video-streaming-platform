@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import video.streaming.platform.streamly.video.processing.VideoProcessingPublisher;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -51,6 +52,19 @@ public class VideoController {
                 .map(video -> videoMapper.entityToDTO(video))
                 .toList();
         return ResponseEntity.status(HttpStatus.OK).body(responseVideoDTOS);
+    }
+
+    @GetMapping("/{videoId}")
+    public ResponseEntity<ResponseVideoDTO> getVideoById(@PathVariable UUID videoId){
+        Video videoById = videoService.getVideoById(videoId);
+        ResponseVideoDTO responseVideoDTO = videoMapper.entityToDTO(videoById);
+        return ResponseEntity.status(HttpStatus.OK).body(responseVideoDTO);
+    }
+
+    @GetMapping("/{videoId}/stream")
+    public ResponseEntity<?> getVideoStream(@PathVariable UUID videoId){
+        String signedUrl = videoService.generatePublicUrl(videoId);
+        return ResponseEntity.status(HttpStatus.OK).body(Map.of("url", signedUrl));
     }
 
     @DeleteMapping("/{videoId}")

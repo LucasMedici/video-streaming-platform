@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 import video.streaming.platform.streamly.user.User;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -16,6 +17,12 @@ public class VideoService {
 
     @Value("${supabase.bucket}")
     private String bucket;
+
+    @Value("${supabase.url}")
+    private String supabaseUrl;
+
+    @Value("${supabase.service-key}")
+    private String serviceKey;
 
     private final VideoRepository videoRepository;
     private final WebClient webClient;
@@ -94,5 +101,16 @@ public class VideoService {
                 .retrieve()
                 .toBodilessEntity()
                 .block();
+    }
+
+    public String generatePublicUrl(UUID videoId) {
+
+        String playlistPath = videoId + "/hls/index.m3u8";
+
+        return supabaseUrl +
+                "/storage/v1/object/public/" +
+                bucket +
+                "/" +
+                playlistPath;
     }
 }
