@@ -27,14 +27,44 @@
 
     <div class="upload-box">
 
-        <input id="file" type="file" accept="video/*">
+        <!-- DROP ZONE -->
+        <div id="dropZone" class="drop-zone">
+            Arraste o vídeo aqui ou clique para selecionar
+            <input id="file" type="file" accept="video/*" hidden>
+        </div>
 
+        <!-- PREVIEW -->
+        <video id="preview"
+               controls
+               style="display:none; margin-top:15px; max-width:100%; border-radius:8px;">
+        </video>
+
+        <!-- ACTION BUTTONS (REMOVER / CANCELAR) -->
+        <div style="margin-top:10px; display:flex; gap:10px;">
+            <button id="removeBtn"
+                    type="button"
+                    onclick="removerVideo()"
+                    class="remove-btn"
+                    style="display:none;">
+                ✕ Remover vídeo
+            </button>
+        </div>
+
+        <!-- FORM INPUTS -->
         <input id="title" placeholder="Título do vídeo">
 
         <textarea id="description" placeholder="Descrição"></textarea>
 
-        <button class="upload-btn" onclick="upload()">
-            Enviar
+        <!-- PROGRESS BAR -->
+        <div class="progress-container" style="display:none;">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+
+        <!-- UPLOAD BUTTON -->
+        <button id="uploadBtn"
+                class="upload-btn-modern"
+                onclick="upload()">
+            <span class="btn-text">Enviar vídeo</span>
         </button>
 
     </div>
@@ -53,18 +83,111 @@
         window.location.href="/home";
     }
 
-    async function upload(){
+    const dropZone = document.getElementById("dropZone");
+    const fileInput = document.getElementById("file");
+    const preview = document.getElementById("preview");
+    const progressBar = document.getElementById("progressBar");
+    const progressContainer = document.querySelector(".progress-container");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const removeBtn = document.getElementById("removeBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
 
-        const fileInput = document.getElementById("file");
-        const file = fileInput.files[0];
+    let currentXHR = null;
 
-        if(!file){
-            alert("Selecione um arquivo");
+    // CLICK
+    dropZone.addEventListener("click", () => fileInput.click());
+
+    // DRAG
+    dropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropZone.classList.add("dragover");
+    });
+
+    dropZone.addEventListener("dragleave", () => {
+        dropZone.classList.remove("dragover");
+    });
+
+    dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("dragover");
+
+        const file = e.dataTransfer.files[0];
+        fileInput.files = e.dataTransfer.files;
+        mostrarPreview(file);
+    });
+
+    fileInput.addEventListener("change", () => {
+        mostrarPreview(fileInput.files[0]);
+    });
+
+    function mostrarPreview(file){
+        if(!file) return;
+
+        if(!file.type.startsWith("video/")){
+            alert("Arquivo inválido");
+            fileInput.value = "";
             return;
         }
 
+        // 🔥 LIMITE 20MB
+        const MAX_SIZE = 20 * 1024 * 1024;
+
+        if(file.size > MAX_SIZE){
+            alert("O vídeo deve ter no máximo 20MB.");
+            fileInput.value = "";
+            return;
+        }
+
+        const url = URL.createObjectURL(file);
+        preview.src = url;
+        preview.style.display = "block";
+
+        removeBtn.style.display = "inline-block";
+    }
+
+    function removerVideo(){
+        fileInput.value = "";
+        preview.src = "";
+        preview.style.display = "none";
+        progressBar.style.width = "0%";
+        progressContainer.style.display = "none";
+        removeBtn.style.display = "none";
+    }
+
+    function cancelarUpload(){
+        if(currentXHR){
+            currentXHR.abort();
+            alert("Upload cancelado.");
+        }
+
+        uploadBtn.disabled = false;
+        uploadBtn.innerText = "Enviar";
+        cancelBtn.style.display = "none";
+        progressBar.style.width = "0%";
+    }
+
+    async function upload(){
+
+        const file = fileInput.files[0];
+        const title = document.getElementById("title").value.trim();
+
+        if(!file){
+            alert("Selecione um vídeo");
+            return;
+        }
+
+        if(!title){
+            alert("Informe um título");
+            return;
+        }
+
+        uploadBtn.disabled = true;
+        uploadBtn.innerHTML = "⏳ Enviando...";
+        progressContainer.style.display = "block";
+        cancelBtn.style.display = "inline-block";
+
         const payload = {
-            title: document.getElementById("title").value,
+            title: title,
             description: document.getElementById("description").value,
             mimeType: file.type
         };
@@ -73,21 +196,39 @@
         formData.append("file", file);
         formData.append("data", JSON.stringify(payload));
 
-        const response = await fetch("/videos", {
-            method: "POST",
-            headers:{
-                "Authorization": "Bearer " + token
-            },
-            body: formData
-        });
+        const xhr = new XMLHttpRequest();
+        currentXHR = xhr;
 
-        if(response.ok){
-            alert("Upload enviado 🚀");
-            window.location.href="/home";
-        }else{
-            const text = await response.text();
-            alert("Erro:\n"+text);
-        }
+        xhr.open("POST", "/videos");
+        xhr.setRequestHeader("Authorization", "Bearer " + token);
+
+        xhr.upload.onprogress = function(e){
+            if(e.lengthComputable){
+                const percent = (e.loaded / e.total) * 100;
+                progressBar.style.width = percent + "%";
+            }
+        };
+
+        xhr.onload = function(){
+            uploadBtn.disabled = false;
+            uploadBtn.innerText = "Enviar";
+            cancelBtn.style.display = "none";
+
+            if(xhr.status === 200 || xhr.status === 201){
+                alert("Upload concluído 🚀");
+                window.location.href="/home";
+            }else{
+                alert("Erro:\n" + xhr.responseText);
+            }
+        };
+
+        xhr.onerror = function(){
+            alert("Erro de conexão.");
+            uploadBtn.disabled = false;
+            cancelBtn.style.display = "none";
+        };
+
+        xhr.send(formData);
     }
 
 </script>
