@@ -59,6 +59,7 @@ public class Video {
     public String getMimeType(){return mimeType;}
     public Long getSizeBytes(){return sizeBytes;}
     public User getOwner(){return owner;}
+    public VideoStatus getStatus(){return status;}
 
     public void setTitle(String title) {this.title=title;}
     public void setDescription(String description) {this.description=description;}

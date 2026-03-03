@@ -42,8 +42,14 @@ public class VideoProcessingSubscriber {
             log.info("Gerando HLS");
             Path hlsDir = ffmpegService.generateHls(localFile);
 
+            log.info("Gerando thumbnail");
+            Path thumbnailDir = ffmpegService.generateThumb(localFile);
+
             log.info("Subindo chunks ao supabase");
             videoUploadService.uploadHlsDirectory(hlsDir, processingMessageDTO.getVideoId());
+
+            log.info("Subindo thumbnail ao supabase");
+            videoUploadService.uploadThumbnail(thumbnailDir, processingMessageDTO.getVideoId());
 
 
             log.info("Atualizando dados do video");
@@ -51,7 +57,8 @@ public class VideoProcessingSubscriber {
                     processingMessageDTO.getVideoId(),
                     VideoStatus.UPLOADED,
                     duration,
-                    processingMessageDTO.getPath()
+                    processingMessageDTO.getPath(),
+                    processingMessageDTO.getVideoId() + "/thumbnail.jpg"
             );
 
             Files.delete(localFile);

@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth-> auth
                         .requestMatchers("/auth").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                        .requestMatchers("/home", "upload","/login", "/register", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/watch/**", "/home", "upload","/login", "/register", "/css/**", "/js/**").permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/videos").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/videos/**").hasRole("ADMIN")

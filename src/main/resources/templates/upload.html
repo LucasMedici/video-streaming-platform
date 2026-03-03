@@ -90,7 +90,7 @@
     const progressContainer = document.querySelector(".progress-container");
     const uploadBtn = document.getElementById("uploadBtn");
     const removeBtn = document.getElementById("removeBtn");
-    const cancelBtn = document.getElementById("cancelBtn");
+
 
     let currentXHR = null;
 
@@ -162,7 +162,6 @@
 
         uploadBtn.disabled = false;
         uploadBtn.innerText = "Enviar";
-        cancelBtn.style.display = "none";
         progressBar.style.width = "0%";
     }
 
@@ -184,7 +183,6 @@
         uploadBtn.disabled = true;
         uploadBtn.innerHTML = "⏳ Enviando...";
         progressContainer.style.display = "block";
-        cancelBtn.style.display = "inline-block";
 
         const payload = {
             title: title,
@@ -212,7 +210,6 @@
         xhr.onload = function(){
             uploadBtn.disabled = false;
             uploadBtn.innerText = "Enviar";
-            cancelBtn.style.display = "none";
 
             if(xhr.status === 200 || xhr.status === 201){
                 alert("Upload concluído 🚀");
@@ -225,7 +222,6 @@
         xhr.onerror = function(){
             alert("Erro de conexão.");
             uploadBtn.disabled = false;
-            cancelBtn.style.display = "none";
         };
 
         xhr.send(formData);

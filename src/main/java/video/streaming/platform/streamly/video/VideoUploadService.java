@@ -60,4 +60,23 @@ public class VideoUploadService {
             throw new RuntimeException("Erro ao subir chunk: " + file.getFileName(), e);
         }
     }
+
+    public void uploadThumbnail(Path thumbnailFile, UUID videoId) {
+        try {
+            String remotePath = videoId + "/thumbnail.jpg";
+
+            byte[] bytes = Files.readAllBytes(thumbnailFile);
+
+            webClient.post()
+                    .uri("/storage/v1/object/{bucket}/{path}", bucket, remotePath)
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .bodyValue(bytes)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+
+        } catch (IOException e) {
+            throw new RuntimeException("Erro ao subir thumbnail: " + thumbnailFile.getFileName(), e);
+        }
+    }
 }

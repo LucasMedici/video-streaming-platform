@@ -76,4 +76,41 @@ public class FfmpegService {
             throw new RuntimeException("Erro ao processar video em HLS");
         }
     }
+
+    public Path generateThumb(Path localFile) {
+        try {
+            Path outputDir = Files.createTempDirectory("thumb-");
+            Path thumbnailPath = outputDir.resolve("thumbnail.jpg");
+
+            ProcessBuilder processBuilder = new ProcessBuilder(
+                    "ffmpeg",
+                    "-i", localFile.toString(),
+                    "-ss", "00:00:03",
+                    "-vframes", "1",
+                    "-vf", "scale=1280:720:force_original_aspect_ratio=decrease",
+                    "-y", // sobrescreve se existir
+                    thumbnailPath.toString()
+            );
+
+            processBuilder.redirectErrorStream(true);
+            Process process = processBuilder.start();
+
+            try (BufferedReader reader =
+                         new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                while (reader.readLine() != null) {
+                    // apenas consome o output
+                }
+            }
+
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                throw new RuntimeException("Erro ao gerar thumbnail com FFmpeg");
+            }
+
+            return thumbnailPath;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao processar thumbnail do vídeo", e);
+        }
+    }
 }

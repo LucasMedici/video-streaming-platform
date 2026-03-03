@@ -1,0 +1,62 @@
+body{
+    background:#0f172a;
+    margin:0;
+    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color:white;
+}
+
+.watch-wrapper{
+    max-width:1000px;
+    margin:40px auto;
+    padding:0 20px;
+}
+
+/* BOTÃO VOLTAR */
+
+.back-btn{
+    background:#1e293b;
+    color:white;
+    border:none;
+    padding:10px 16px;
+    border-radius:8px;
+    cursor:pointer;
+    margin-bottom:20px;
+    transition:0.2s;
+}
+
+.back-btn:hover{
+    background:#334155;
+}
+
+/* PLAYER BOX FIXO 16:9 */
+
+.player-box{
+    width:100%;
+    aspect-ratio:16/9;
+    background:black;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 20px 40px rgba(0,0,0,0.6);
+}
+
+video{
+    width:100%;
+    height:100%;
+    object-fit:contain; /* 🔥 impede deformação */
+}
+
+/* INFO */
+
+.video-info{
+    margin-top:25px;
+}
+
+.video-info h1{
+    margin-bottom:10px;
+    font-size:26px;
+}
+
+.video-info p{
+    color:#94a3b8;
+    line-height:1.6;
+}

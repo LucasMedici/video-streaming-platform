@@ -8,6 +8,7 @@ public record ResponseVideoDTO(
         String description,
         VideoStatus status,
         Long durationSeconds,
-        String storagePath
+        String storagePath,
+        String thumbnailPath
 ) {
 }

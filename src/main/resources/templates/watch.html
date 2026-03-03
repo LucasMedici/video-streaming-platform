@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Assistir - Streamly</title>
+    <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <link rel="stylesheet" href="/css/watch.css">
+</head>
+<body>
+
+<div class="watch-wrapper">
+
+    <button class="back-btn" onclick="voltar()">← Voltar</button>
+
+    <div class="player-box">
+        <video id="videoPlayer" controls></video>
+    </div>
+
+    <div class="video-info">
+        <h1 id="videoTitle"></h1>
+        <p id="videoDescription"></p>
+    </div>
+
+</div>
+
+<script>
+
+    const token = localStorage.getItem("token");
+    const videoId = window.location.pathname.split("/").pop();
+
+    function voltar(){
+        window.location.href = "/home";
+    }
+
+    async function carregarVideo(){
+
+        // 🔹 Busca dados do vídeo (titulo + descricao)
+        const videoResponse = await fetch(`/videos/${videoId}`, {
+            headers:{
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const videoData = await videoResponse.json();
+
+        document.getElementById("videoTitle").innerText = videoData.title;
+        document.getElementById("videoDescription").innerText = videoData.description || "";
+
+        // 🔹 Busca URL HLS
+        const response = await fetch(`/videos/${videoId}/stream`, {
+            headers:{
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const data = await response.json();
+        const videoSrc = data.url;
+
+        const video = document.getElementById('videoPlayer');
+
+        if (Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(videoSrc);
+            hls.attachMedia(video);
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = videoSrc;
+        }
+    }
+
+    carregarVideo();
+
+</script>
+
+</body>
+</html>
