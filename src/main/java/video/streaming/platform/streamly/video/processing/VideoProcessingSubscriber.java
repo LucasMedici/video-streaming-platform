@@ -3,6 +3,7 @@ package video.streaming.platform.streamly.video.processing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import video.streaming.platform.streamly.video.VideoDownloadService;
 import video.streaming.platform.streamly.video.VideoService;
@@ -12,9 +13,16 @@ import video.streaming.platform.streamly.video.VideoUploadService;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.UUID;
 
 @Component
 public class VideoProcessingSubscriber {
+
+    @Value("${supabase.bucket}")
+    private String bucket;
+
+    @Value("${supabase.url}")
+    private String supabaseUrl;
 
     private VideoService videoService;
     private FfmpegService ffmpegService;
@@ -58,7 +66,7 @@ public class VideoProcessingSubscriber {
                     VideoStatus.UPLOADED,
                     duration,
                     processingMessageDTO.getPath(),
-                    processingMessageDTO.getVideoId() + "/thumbnail.jpg"
+                    makeThumbnailLink(processingMessageDTO.getVideoId())
             );
 
             Files.delete(localFile);
@@ -67,6 +75,15 @@ public class VideoProcessingSubscriber {
             videoService.updateVideoStatus(VideoStatus.FAILED, processingMessageDTO.getVideoId());
         }
 
+    }
+
+    private String makeThumbnailLink(UUID videoId) {
+        return supabaseUrl +
+                "/storage/v1/object/public/" +
+                bucket +
+                "/" +
+                videoId +
+                "/thumbnail.jpg";
     }
 
 }
