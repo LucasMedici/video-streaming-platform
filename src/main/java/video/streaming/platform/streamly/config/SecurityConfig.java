@@ -31,6 +31,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .requestMatchers("/watch/**", "/home", "upload","/login", "/register", "/css/**", "/js/**").permitAll()
+                        .requestMatchers("/docs/**", "/api-docs/**", "/swagger-ui/**", "swagger-ui.html").permitAll()
 
                         .requestMatchers(HttpMethod.POST, "/videos").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/videos/**").hasRole("ADMIN")

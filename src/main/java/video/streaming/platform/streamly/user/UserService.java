@@ -19,6 +19,11 @@ public class UserService {
     }
 
     public User createUser(CreateUserDTO createUserDTO){
+
+        if(userRepository.existsByEmail(createUserDTO.email())){
+            throw new RuntimeException("Email already exists");
+        }
+
         var newUser = new User(createUserDTO.name(),
                             createUserDTO.email(),
                             passwordEncoder.encode(createUserDTO.password()),
