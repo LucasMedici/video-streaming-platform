@@ -5,6 +5,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
+import video.streaming.platform.streamly.exceptions.VideoNotFoundException;
 import video.streaming.platform.streamly.user.User;
 
 import java.nio.file.Path;
@@ -63,11 +64,11 @@ public class VideoService {
     }
 
     public Video getVideoById(UUID videoId){
-        return videoRepository.findById(videoId).orElseThrow();
+        return videoRepository.findById(videoId).orElseThrow(() -> new VideoNotFoundException(videoId));
     }
 
     public Video updateVideo(UUID videoId, UpdateVideoDTO updateVideoDTO){
-        Video foundedVideo = videoRepository.findById(videoId).orElseThrow();
+        Video foundedVideo = videoRepository.findById(videoId).orElseThrow(() -> new VideoNotFoundException(videoId));
 
         foundedVideo.setTitle(updateVideoDTO.title());
         foundedVideo.setDescription(updateVideoDTO.description());
@@ -77,7 +78,7 @@ public class VideoService {
     }
 
     public Video updateVideoOnProcessingFinished(UUID videoID, VideoStatus status, Long durationSeconds, String storagePath, String thumbnailPath){
-        Video foundedVideo = videoRepository.findById(videoID).orElseThrow();
+        Video foundedVideo = videoRepository.findById(videoID).orElseThrow(() -> new VideoNotFoundException(videoID));
         foundedVideo.setStatus(status);
         foundedVideo.setDurationSeconds(durationSeconds);
         foundedVideo.setStoragePath(storagePath);
@@ -93,6 +94,9 @@ public class VideoService {
     }
 
     public void deleteVideo(UUID videoId){
+        if(videoRepository.findById(videoId).isEmpty()){
+            throw new VideoNotFoundException(videoId);
+        }
         videoRepository.deleteById(videoId);
     }
 

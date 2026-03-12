@@ -56,7 +56,7 @@ public class VideoController {
             videoProcessingPublisher.sendMessage(createdVideo.getId(), originalPath); // enviar para fila processar o FFMPEG
             return ResponseEntity.status(HttpStatus.CREATED).build();
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid Arguments");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid Arguments: " + e.getMessage());
         }
     }
 

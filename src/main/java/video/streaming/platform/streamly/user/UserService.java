@@ -2,6 +2,8 @@ package video.streaming.platform.streamly.user;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import video.streaming.platform.streamly.exceptions.EmailAlreadyExistsException;
+import video.streaming.platform.streamly.exceptions.UserNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +23,7 @@ public class UserService {
     public User createUser(CreateUserDTO createUserDTO){
 
         if(userRepository.existsByEmail(createUserDTO.email())){
-            throw new RuntimeException("Email already exists");
+            throw new EmailAlreadyExistsException(createUserDTO.email());
         }
 
         var newUser = new User(createUserDTO.name(),
@@ -36,11 +38,11 @@ public class UserService {
     }
 
     public User getUserById(UUID userId){
-        return userRepository.findById(userId).orElseThrow();
+        return userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
     }
 
     public User updateUser(UUID userId, CreateUserDTO createUserDTO){
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 
         user.setName(createUserDTO.name());
         user.setEmail(createUserDTO.email());
@@ -49,6 +51,10 @@ public class UserService {
     }
 
     public void deleteUser(UUID userID){
+        if(userRepository.findById(userID).isEmpty()){
+            throw new UserNotFoundException(userID);
+        }
+
         userRepository.deleteById(userID);
     }
 }
