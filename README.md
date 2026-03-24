@@ -6,6 +6,10 @@
 [![API Docs](https://img.shields.io/badge/Docs-Swagger-85EA2D)](http://localhost:8080/docs)
 [![Docker](https://img.shields.io/badge/Container-Docker-2496ED)](https://www.docker.com/)
 
+<p align="center">
+  <img src="public/streamly.png" alt="Streamly" width="220" style="border-radius: 16px;" />
+</p>
+
 Backend API for a video streaming platform with JWT authentication, user management, asynchronous video processing, and Supabase Storage integration.
 
 ## Quick Links
@@ -16,6 +20,7 @@ Backend API for a video streaming platform with JWT authentication, user managem
 - [Run Locally](#run-locally)
 - [Run with Docker](#run-with-docker)
 - [API Documentation](#api-documentation)
+- [Application Screenshots](#application-screenshots)
 - [Automated Tests](#automated-tests)
 - [Configuration](#configuration)
 
@@ -126,6 +131,18 @@ With the application running:
 
 - Swagger UI: `http://localhost:8080/docs`
 - OpenAPI JSON: `http://localhost:8080/api-docs`
+
+<img src="public/docs.png" alt="Swagger Docs" style="border-radius: 16px;" />
+
+## Application Screenshots
+
+| Home | Login |
+| --- | --- |
+| <img src="public/home.png" alt="Home" style="border-radius: 16px;" /> | <img src="public/login.png" alt="Login" style="border-radius: 16px;" /> |
+
+| Upload | Video |
+| --- | --- |
+| <img src="public/upload.png" alt="Upload" style="border-radius: 16px;" /> | <img src="public/video.png" alt="Video" style="border-radius: 16px;" /> |
 
 ## Automated Tests
 
