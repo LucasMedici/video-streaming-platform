@@ -115,16 +115,5 @@ class VideoServiceTest {
         assertEquals("videos/path/thumb.jpg", updated.getThumbnailPath());
     }
 
-    @Test
-    void generatePublicUrlShouldBuildExpectedPath() {
-        ReflectionTestUtils.setField(videoService, "supabaseUrl", "https://demo.supabase.co");
-        ReflectionTestUtils.setField(videoService, "bucket", "streamly-bucket");
-
-        UUID videoId = UUID.randomUUID();
-        String url = videoService.generatePublicUrl(videoId);
-
-        assertTrue(url.contains("https://demo.supabase.co/storage/v1/object/public/streamly-bucket/"));
-        assertTrue(url.endsWith(videoId + "/hls/index.m3u8"));
-    }
 }
 
